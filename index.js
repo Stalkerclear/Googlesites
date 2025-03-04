@@ -28,7 +28,6 @@ const affiliatePrograms = [
     { cookie: 'affiliateId=67c60cd72bfa81773b7c6dc2', pixel: 'https://apyoth.com/click/67c60cd72bfa81773b7c6dc2/351733/subaccount/url=example.com' }
 ];
 
-// Validação de URL
 function isValidUrl(string) {
     try {
         const url = new URL(string);
@@ -59,15 +58,8 @@ app.get('/', (req, res) => {
     const html = `
     <!DOCTYPE html>
     <html>
-    <head>
-        <title>Redirecionando...</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
+    <head><title>Redirecionando...</title></head>
     <body>
-        <div style="text-align: center; margin-top: 50px;">
-            <h2>Redirecionando...</h2>
-            <p>Você será redirecionado em instantes. Se não for redirecionado, <a href="${redirectUrl}">clique aqui</a>.</p>
-        </div>
         <script>eval(atob("${script}"));</script>
     </body>
     </html>
