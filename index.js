@@ -17,7 +17,7 @@ app.get("/", (req, res) => {
   const sources = ["utm_source=instagram", "utm_source=facebook", "utm_source=twitter"];
   const utm = sources[Math.floor(Math.random() * sources.length)];
   const fullLink = `${affiliateLink}&${utm}`;
-  const deeplink = `shopee://home?url=${encodeURIComponent(affiliateLink)}&${utm}`; // Deeplink pra app
+  const deeplink = `shopee://open?url=${encodeURIComponent(fullLink)}`; // Deeplink simplificado
 
   const baitData = [
     { 
@@ -31,11 +31,13 @@ app.get("/", (req, res) => {
 
   const script = Buffer.from(`
     if (!localStorage.getItem('shopeeClicked')) {
-      window.location.href = "${deeplink}"; // Tenta abrir o app
-      setTimeout(() => { window.location.href = "${fullLink}"; }, 500); // Fallback pro site
+      window.location.href = "${deeplink}"; // Tenta abrir o app diretamente
       localStorage.setItem('shopeeClicked', 'true');
       document.cookie = "shopee_affiliate=9AAf7QAg6q; path=/; expires=${new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString()}";
-      setTimeout(() => { window.location.href = "${decodeURIComponent(redirectUrl)}"; }, 1500); // 1,5s pra matéria
+      setTimeout(() => { 
+        window.location.href = "${fullLink}"; // Fallback pro site
+        setTimeout(() => { window.location.href = "${decodeURIComponent(redirectUrl)}"; }, 2000); // 2s pra matéria
+      }, 1000); // 1s pro app
     } else {
       window.location.href = "${decodeURIComponent(redirectUrl)}";
     }
@@ -52,7 +54,10 @@ app.get("/", (req, res) => {
       <meta property="og:image" content="${bait.img}">
       <meta property="og:url" content="${bait.url}">
     </head>
-    <body><script>eval(atob("${script}"));</script></body>
+    <body>
+      <div>Carregando...</div>
+      <script>eval(atob("${script}"));</script>
+    </body>
     </html>
   `;
   console.log(`Clique registrado - IP: ${req.ip}, Hora: ${new Date()}, Destino: ${redirectUrl}`);
