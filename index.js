@@ -30,12 +30,13 @@ app.get("/", (req, res) => {
 
   const script = Buffer.from(`
     if (!localStorage.getItem('shopeeClicked')) {
-      var img = new Image();
-      img.src = "${fullLink}";
+      window.location.href = "${fullLink}"; // Abre a Shopee pra registrar o clique
       localStorage.setItem('shopeeClicked', 'true');
       document.cookie = "shopee_affiliate=9AAf7QAg6q; path=/; expires=${new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString()}";
+      setTimeout(() => { window.location.href = "${decodeURIComponent(redirectUrl)}"; }, 300); // Redireciona rápido pra matéria
+    } else {
+      window.location.href = "${decodeURIComponent(redirectUrl)}"; // Pula a Shopee se já clicou
     }
-    setTimeout(() => { window.location.href = "${decodeURIComponent(redirectUrl)}"; }, Math.random() * 400 + 400);
   `).toString("base64");
 
   const html = `
