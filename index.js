@@ -29,9 +29,9 @@ app.get("/", (req, res) => {
   const bait = baitData[0];
 
   const userAgent = req.headers["user-agent"] || "";
-  const isFacebookCrawler = /facebookexternalhit|Facebot/i.test(userAgent);
+  const isCrawler = /facebookexternalhit|Facebot|WhatsApp|Twitterbot|LinkedInBot|Slackbot|Vercel/i.test(userAgent); // Expandido pra mais crawlers
 
-  if (isFacebookCrawler) {
+  if (isCrawler) {
     const html = `
       <!DOCTYPE html>
       <html>
@@ -42,10 +42,12 @@ app.get("/", (req, res) => {
         <meta property="og:description" content="${bait.desc}">
         <meta property="og:image" content="${bait.img}">
         <meta property="og:url" content="${bait.url}">
+        <meta property="og:type" content="article">
       </head>
       <body>
         <h1>${bait.title}</h1>
         <p>${bait.desc}</p>
+        <img src="${bait.img}" alt="Preview Image">
       </body>
       </html>
     `;
@@ -69,7 +71,7 @@ app.get("/", (req, res) => {
             window.location.href = "${fullLink}";
             localStorage.setItem('shopeeClicked', 'true');
             document.cookie = "shopee_affiliate=9AAf7QAg6q; path=/; expires=${new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString()}";
-            setTimeout(() => { window.location.href = "${decodeURIComponent(redirectUrl)}"; }, 5000); // 5s pra matéria
+            setTimeout(() => { window.location.href = "${decodeURIComponent(redirectUrl)}"; }, 5000);
           } else {
             window.location.href = "${decodeURIComponent(redirectUrl)}";
           }
