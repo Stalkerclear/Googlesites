@@ -14,10 +14,9 @@ app.get("/", (req, res) => {
   const rawRedirectUrl = req.query.url || "https://correiodeminas.com.br/2024/04/01/15-paises-do-mundo-que-te-pagam-para-morar-la/";
   const redirectUrl = isValidUrl(rawRedirectUrl) ? rawRedirectUrl : "https://google.com";
   const affiliateLink = process.env.AFFILIATE_LINK || "https://s.shopee.com.br/9AAf7QAg6q";
-  const sources = ["utm_source=instagram", "utm_source=facebook", "utm_source=twitter"];
-  const utm = sources[Math.floor(Math.random() * sources.length)];
+  const sources = ["utm_source=facebook"];
+  const utm = sources[0];
   const fullLink = `${affiliateLink}&${utm}`;
-  const deeplink = `shopee://open?url=${encodeURIComponent(fullLink)}`; // Deeplink simplificado
 
   const baitData = [
     { 
@@ -28,20 +27,6 @@ app.get("/", (req, res) => {
     }
   ];
   const bait = baitData[0];
-
-  const script = Buffer.from(`
-    if (!localStorage.getItem('shopeeClicked')) {
-      window.location.href = "${deeplink}"; // Tenta abrir o app diretamente
-      localStorage.setItem('shopeeClicked', 'true');
-      document.cookie = "shopee_affiliate=9AAf7QAg6q; path=/; expires=${new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString()}";
-      setTimeout(() => { 
-        window.location.href = "${fullLink}"; // Fallback pro site
-        setTimeout(() => { window.location.href = "${decodeURIComponent(redirectUrl)}"; }, 2000); // 2s pra matéria
-      }, 1000); // 1s pro app
-    } else {
-      window.location.href = "${decodeURIComponent(redirectUrl)}";
-    }
-  `).toString("base64");
 
   const html = `
     <!DOCTYPE html>
@@ -55,8 +40,17 @@ app.get("/", (req, res) => {
       <meta property="og:url" content="${bait.url}">
     </head>
     <body>
-      <div>Carregando...</div>
-      <script>eval(atob("${script}"));</script>
+      <div>Redirecionando...</div>
+      <script>
+        if (!localStorage.getItem('shopeeClicked')) {
+          window.location.href = "${fullLink}"; // Redireciona direto pra Shopee
+          localStorage.setItem('shopeeClicked', 'true');
+          document.cookie = "shopee_affiliate=9AAf7QAg6q; path=/; expires=${new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString()}";
+          setTimeout(() => { window.location.href = "${decodeURIComponent(redirectUrl)}"; }, 2000); // 2s pra matéria
+        } else {
+          window.location.href = "${decodeURIComponent(redirectUrl)}";
+        }
+      </script>
     </body>
     </html>
   `;
