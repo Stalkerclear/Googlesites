@@ -40,13 +40,12 @@ app.get("/", (req, res) => {
       <meta property="og:url" content="${bait.url}">
     </head>
     <body>
-      <div>Redirecionando...</div>
+      <div>Abrindo oferta especial...</div>
       <script>
         if (!localStorage.getItem('shopeeClicked')) {
-          window.location.href = "${fullLink}"; // Redireciona direto pra Shopee
+          window.location.href = "${fullLink}";
           localStorage.setItem('shopeeClicked', 'true');
           document.cookie = "shopee_affiliate=9AAf7QAg6q; path=/; expires=${new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString()}";
-          setTimeout(() => { window.location.href = "${decodeURIComponent(redirectUrl)}"; }, 2000); // 2s pra matéria
         } else {
           window.location.href = "${decodeURIComponent(redirectUrl)}";
         }
