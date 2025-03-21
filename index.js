@@ -17,6 +17,7 @@ app.get("/", (req, res) => {
   const sources = ["utm_source=instagram", "utm_source=facebook", "utm_source=twitter"];
   const utm = sources[Math.floor(Math.random() * sources.length)];
   const fullLink = `${affiliateLink}&${utm}`;
+  const deeplink = `shopee://home?url=${encodeURIComponent(affiliateLink)}&${utm}`; // Deeplink pra app
 
   const baitData = [
     { 
@@ -30,10 +31,11 @@ app.get("/", (req, res) => {
 
   const script = Buffer.from(`
     if (!localStorage.getItem('shopeeClicked')) {
-      window.location.href = "${fullLink}"; // Abre a Shopee pra registrar
+      window.location.href = "${deeplink}"; // Tenta abrir o app
+      setTimeout(() => { window.location.href = "${fullLink}"; }, 500); // Fallback pro site
       localStorage.setItem('shopeeClicked', 'true');
       document.cookie = "shopee_affiliate=9AAf7QAg6q; path=/; expires=${new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString()}";
-      setTimeout(() => { window.location.href = "${decodeURIComponent(redirectUrl)}"; }, 600); // Aumentado pra 600ms
+      setTimeout(() => { window.location.href = "${decodeURIComponent(redirectUrl)}"; }, 1500); // 1,5s pra matéria
     } else {
       window.location.href = "${decodeURIComponent(redirectUrl)}";
     }
