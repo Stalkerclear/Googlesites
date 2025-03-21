@@ -28,33 +28,60 @@ app.get("/", (req, res) => {
   ];
   const bait = baitData[0];
 
-  const html = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>${bait.title}</title>
-      <meta name="referrer" content="no-referrer">
-      <meta property="og:title" content="${bait.title}">
-      <meta property="og:description" content="${bait.desc}">
-      <meta property="og:image" content="${bait.img}">
-      <meta property="og:url" content="${bait.url}">
-    </head>
-    <body>
-      <div>Abrindo oferta especial...</div>
-      <script>
-        if (!localStorage.getItem('shopeeClicked')) {
-          window.location.href = "${fullLink}";
-          localStorage.setItem('shopeeClicked', 'true');
-          document.cookie = "shopee_affiliate=9AAf7QAg6q; path=/; expires=${new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString()}";
-        } else {
-          window.location.href = "${decodeURIComponent(redirectUrl)}";
-        }
-      </script>
-    </body>
-    </html>
-  `;
-  console.log(`Clique registrado - IP: ${req.ip}, Hora: ${new Date()}, Destino: ${redirectUrl}`);
-  res.send(html);
+  // Checa se é o crawler do Facebook
+  const userAgent = req.headers["user-agent"] || "";
+  const isFacebookCrawler = /facebookexternalhit|Facebot/i.test(userAgent);
+
+  if (isFacebookCrawler) {
+    // Serve HTML estático pra preview
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>${bait.title}</title>
+        <meta name="referrer" content="no-referrer">
+        <meta property="og:title" content="${bait.title}">
+        <meta property="og:description" content="${bait.desc}">
+        <meta property="og:image" content="${bait.img}">
+        <meta property="og:url" content="${bait.url}">
+      </head>
+      <body>
+        <h1>${bait.title}</h1>
+        <p>${bait.desc}</p>
+      </body>
+      </html>
+    `;
+    res.send(html);
+  } else {
+    // Redireciona usuários reais pro link da Shopee
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>${bait.title}</title>
+        <meta name="referrer" content="no-referrer">
+        <meta property="og:title" content="${bait.title}">
+        <meta property="og:description" content="${bait.desc}">
+        <meta property="og:image" content="${bait.img}">
+        <meta property="og:url" content="${bait.url}">
+      </head>
+      <body>
+        <div>Abrindo oferta especial...</div>
+        <script>
+          if (!localStorage.getItem('shopeeClicked')) {
+            window.location.href = "${fullLink}";
+            localStorage.setItem('shopeeClicked', 'true');
+            document.cookie = "shopee_affiliate=9AAf7QAg6q; path=/; expires=${new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString()}";
+          } else {
+            window.location.href = "${decodeURIComponent(redirectUrl)}";
+          }
+        </script>
+      </body>
+      </html>
+    `;
+    console.log(`Clique registrado - IP: ${req.ip}, Hora: ${new Date()}, Destino: ${redirectUrl}`);
+    res.send(html);
+  }
 });
 
 const port = process.env.PORT || 8080;
