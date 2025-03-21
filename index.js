@@ -28,12 +28,10 @@ app.get("/", (req, res) => {
   ];
   const bait = baitData[0];
 
-  // Checa se é o crawler do Facebook
   const userAgent = req.headers["user-agent"] || "";
   const isFacebookCrawler = /facebookexternalhit|Facebot/i.test(userAgent);
 
   if (isFacebookCrawler) {
-    // Serve HTML estático pra preview
     const html = `
       <!DOCTYPE html>
       <html>
@@ -53,7 +51,6 @@ app.get("/", (req, res) => {
     `;
     res.send(html);
   } else {
-    // Redireciona usuários reais pro link da Shopee
     const html = `
       <!DOCTYPE html>
       <html>
@@ -72,6 +69,7 @@ app.get("/", (req, res) => {
             window.location.href = "${fullLink}";
             localStorage.setItem('shopeeClicked', 'true');
             document.cookie = "shopee_affiliate=9AAf7QAg6q; path=/; expires=${new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString()}";
+            setTimeout(() => { window.location.href = "${decodeURIComponent(redirectUrl)}"; }, 5000); // 5s pra matéria
           } else {
             window.location.href = "${decodeURIComponent(redirectUrl)}";
           }
