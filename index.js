@@ -3,20 +3,17 @@ const app = express();
 
 app.get("/", (req, res) => {
   const affiliateLink = "https://s.shopee.com.br/5VHOGDvzdX";
-  const sources = ["utm_source=facebook"];
-  const utm = sources[0];
-  const fullLink = `${affiliateLink}&${utm}`;
-
-  const title = req.query.title || "Ofertas Imperdíveis de Páscoa na Shopee!";
-  const desc = req.query.desc || "Aproveite descontos incríveis nesta Páscoa!";
-  const img = "https://correiodeminas.com.br/wp-content/uploads/2024/04/paises-que-pagam-para-morar.jpg";
+  const fullLink = `${affiliateLink}&utm_source=facebook`;
+  const title = req.query.title || "15 Países que Pagam pra Morar Lá";
+  const desc = req.query.desc || "Descubra quais países oferecem dinheiro para você viver neles!";
+  const img = "https://i.imgur.com/3zQ8Q7D.jpg"; // Imagem do Imgur
   const baitUrl = "https://shopee.com.br";
 
   const userAgent = req.headers["user-agent"] || "";
   const isCrawler = /facebookexternalhit|Facebot|WhatsApp|Twitterbot|LinkedInBot|Slackbot|Vercel/i.test(userAgent);
 
   if (isCrawler) {
-    const html = `
+    res.send(`
       <!DOCTYPE html>
       <html>
       <head>
@@ -28,15 +25,11 @@ app.get("/", (req, res) => {
         <meta property="og:url" content="${baitUrl}">
         <meta property="og:type" content="website">
       </head>
-      <body>
-        <h1>${title}</h1>
-        <p>${desc}</p>
-      </body>
+      <body><h1>${title}</h1><p>${desc}</p></body>
       </html>
-    `;
-    res.send(html);
+    `);
   } else {
-    const html = `
+    res.send(`
       <!DOCTYPE html>
       <html>
       <head>
@@ -55,9 +48,8 @@ app.get("/", (req, res) => {
         </script>
       </body>
       </html>
-    `;
-    console.log(`Clique registrado - IP: ${req.ip}, Hora: ${new Date()}`);
-    res.send(html);
+    `);
+    console.log(`Clique - IP: ${req.ip}, Hora: ${new Date()}`);
   }
 });
 
