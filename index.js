@@ -1,87 +1,41 @@
 import express from "express";
 const app = express();
 
-function isValidUrl(string) {
-  try {
-    const url = new URL(string);
-    return url.protocol === "https:";
-  } catch (_) {
-    return false;
-  }
-}
-
 app.get("/", (req, res) => {
-  const rawRedirectUrl = req.query.url || "https://correiodeminas.com.br/2024/04/01/15-paises-do-mundo-que-te-pagam-para-morar-la/";
-  const redirectUrl = isValidUrl(rawRedirectUrl) ? rawRedirectUrl : "https://google.com";
-  const affiliateLink = process.env.AFFILIATE_LINK || "https://s.shopee.com.br/9AAf7QAg6q";
+  const affiliateLink = "https://s.shopee.com.br/5VHOGDvzdX"; // Campanha Páscoa
   const sources = ["utm_source=facebook"];
   const utm = sources[0];
   const fullLink = `${affiliateLink}&${utm}`;
 
-  const baitData = [
-    { 
-      title: "15 Países do Mundo que te Pagam para Morar Lá", 
-      desc: "Descubra quais países oferecem dinheiro para você viver neles!", 
-      img: "https://correiodeminas.com.br/wp-content/uploads/2024/04/paises-que-pagam-para-morar.jpg", 
-      url: redirectUrl 
-    }
-  ];
-  const bait = baitData[0];
+  // Parâmetros dinâmicos ou padrão
+  const title = req.query.title || "Ofertas Imperdíveis de Páscoa na Shopee!";
+  const desc = req.query.desc || "Aproveite descontos incríveis nesta Páscoa!";
+  const img = "https://correiodeminas.com.br/wp-content/uploads/2024/04/paises-que-pagam-para-morar.jpg";
+  const baitUrl = "https://shopee.com.br";
 
-  const userAgent = req.headers["user-agent"] || "";
-  const isCrawler = /facebookexternalhit|Facebot|WhatsApp|Twitterbot|LinkedInBot|Slackbot|Vercel/i.test(userAgent); // Expandido pra mais crawlers
-
-  if (isCrawler) {
-    const html = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>${bait.title}</title>
-        <meta name="referrer" content="no-referrer">
-        <meta property="og:title" content="${bait.title}">
-        <meta property="og:description" content="${bait.desc}">
-        <meta property="og:image" content="${bait.img}">
-        <meta property="og:url" content="${bait.url}">
-        <meta property="og:type" content="article">
-      </head>
-      <body>
-        <h1>${bait.title}</h1>
-        <p>${bait.desc}</p>
-        <img src="${bait.img}" alt="Preview Image">
-      </body>
-      </html>
-    `;
-    res.send(html);
-  } else {
-    const html = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>${bait.title}</title>
-        <meta name="referrer" content="no-referrer">
-        <meta property="og:title" content="${bait.title}">
-        <meta property="og:description" content="${bait.desc}">
-        <meta property="og:image" content="${bait.img}">
-        <meta property="og:url" content="${bait.url}">
-      </head>
-      <body>
-        <div>Abrindo oferta especial...</div>
-        <script>
-          if (!localStorage.getItem('shopeeClicked')) {
-            window.location.href = "${fullLink}";
-            localStorage.setItem('shopeeClicked', 'true');
-            document.cookie = "shopee_affiliate=9AAf7QAg6q; path=/; expires=${new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString()}";
-            setTimeout(() => { window.location.href = "${decodeURIComponent(redirectUrl)}"; }, 5000);
-          } else {
-            window.location.href = "${decodeURIComponent(redirectUrl)}";
-          }
-        </script>
-      </body>
-      </html>
-    `;
-    console.log(`Clique registrado - IP: ${req.ip}, Hora: ${new Date()}, Destino: ${redirectUrl}`);
-    res.send(html);
-  }
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>${title}</title>
+      <meta name="referrer" content="no-referrer">
+      <meta property="og:title" content="${title}">
+      <meta property="og:description" content="${desc}">
+      <meta property="og:image" content="${img}">
+      <meta property="og:url" content="${baitUrl}">
+      <meta property="og:type" content="website">
+    </head>
+    <body>
+      <div>Abrindo oferta especial...</div>
+      <script>
+        window.location.href = "${fullLink}";
+        document.cookie = "shopee_affiliate=5VHOGDvzdX; path=/; expires=${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString()}";
+      </script>
+    </body>
+    </html>
+  `;
+  console.log(`Clique registrado - IP: ${req.ip}, Hora: ${new Date()}`);
+  res.send(html);
 });
 
 const port = process.env.PORT || 8080;
