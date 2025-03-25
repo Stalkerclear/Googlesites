@@ -4,9 +4,9 @@ const app = express();
 app.get("/", (req, res) => {
   const affiliateLink = "https://s.shopee.com.br/5VHOGDvzdX";
   const fullLink = `${affiliateLink}&utm_source=facebook`;
-  const title = req.query.title || "15 Países que Pagam pra Morar Lá";
-  const desc = req.query.desc || "Descubra quais países oferecem dinheiro para você viver neles!";
-  const img = "https://i.imgur.com/3zQ8Q7D.jpg"; // Imagem do Imgur
+  const title = req.query.title || "Bebê de Virgínia Fonseca José Leonardo foi internado devido bronquiolite"; // Novo título
+  const desc = req.query.desc || "Descubra quais países oferecem dinheiro para você viver neles!"; // Mantive a desc, mas posso mudar se quiser
+  const img = "https://i.imgur.com/Qw3T2jM.jpg"; // Placeholder mãe e bebê (600x400)
   const baitUrl = "https://shopee.com.br";
 
   const userAgent = req.headers["user-agent"] || "";
