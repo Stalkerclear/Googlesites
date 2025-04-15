@@ -4,9 +4,9 @@ const app = express();
 app.get("/", (req, res) => {
   const affiliateLink = "https://s.shopee.com.br/5VHOGDvzdX";
   const fullLink = `${affiliateLink}&utm_source=facebook`;
-  const title = req.query.title || "Bebê de Virgínia Fonseca José Leonardo foi internado devido bronquiolite"; // Novo título
-  const desc = req.query.desc || "Descubra quais países oferecem dinheiro para você viver neles!"; // Mantive a desc, mas posso mudar se quiser
-  const img = "https://i.imgur.com/Qw3T2jM.jpg"; // Placeholder mãe e bebê (600x400)
+  const title = req.query.title || "Bebê de Virgínia Fonseca José Leonardo foi internado devido bronquiolite";
+  const desc = req.query.desc || "Saiba mais sobre a saúde do bebê de Virgínia Fonseca!"; // Nova descrição
+  const img = "https://static1.purepeople.com.br/articles/2/33/16/92/@/3755964-maria-alice-filha-de-virginia-fonseca-e-580x0-3.jpg"; // Sua imagem
   const baitUrl = "https://shopee.com.br";
 
   const userAgent = req.headers["user-agent"] || "";
