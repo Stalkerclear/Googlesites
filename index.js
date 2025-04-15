@@ -1,38 +1,55 @@
 import express from "express";
 const app = express();
 
-app.get("/", (req, res) => {
-  const affiliateLink = "https://s.shopee.com.br/5VHOGDvzdX";
-  const fullLink = `${affiliateLink}&utm_source=facebook`;
-  const title = req.query.title || "Bebê de Virgínia Fonseca José Leonardo foi internado devido bronquiolite";
-  const desc = req.query.desc || "Descubra quais países oferecem dinheiro para você viver neles!"; // Posso ajustar a descrição, se quiser
-  const img = "https://static1.purepeople.com.br/articles/2/33/16/92/@/3755964-maria-alice-filha-de-virginia-fonseca-e-580x0-3.jpg"; // Imagem da Virgínia
-  const baitUrl = "https://shopee.com.br";
+// Middleware para parsear query strings
+app.use(express.urlencoded({ extended: true }));
 
+app.get("/", (req, res) => {
+  // Configurações do link de afiliado
+  const affiliateCode = "5VHOGDvzdX";
+  const affiliateLink = `https://s.shopee.com.br/${affiliateCode}`;
+  const fullLink = `${affiliateLink}&utm_source=facebook&utm_medium=affiliate`;
+  const baitUrl = "https://noticiasbrasil.com.br"; // Substitua por um domínio real, se tiver
+
+  // Metadados para preview (Open Graph)
+  const title = req.query.title || "Crise de Bronquiolite no Brasil: Saiba Como Proteger Sua Família";
+  const desc = req.query.desc || "Especialistas alertam para aumento de casos de bronquiolite em crianças. Veja dicas de prevenção!";
+  const img = "https://i.imgur.com/704oFGn.jpeg"; // Sua imagem incorporada
+
+  // Detectar crawlers
   const userAgent = req.headers["user-agent"] || "";
   const isCrawler = /facebookexternalhit|Facebot|WhatsApp|Twitterbot|LinkedInBot|Slackbot|Vercel/i.test(userAgent);
 
   if (isCrawler) {
+    // Resposta para crawlers: apenas metadados para preview
     res.send(`
       <!DOCTYPE html>
-      <html>
+      <html lang="pt-BR">
       <head>
+        <meta charset="UTF-8">
         <title>${title}</title>
         <meta name="referrer" content="no-referrer">
+        <meta name="description" content="${desc}">
         <meta property="og:title" content="${title}">
         <meta property="og:description" content="${desc}">
         <meta property="og:image" content="${img}">
         <meta property="og:url" content="${baitUrl}">
-        <meta property="og:type" content="website">
+        <meta property="og:type" content="article">
+        <meta name="twitter:card" content="summary_large_image">
       </head>
-      <body><h1>${title}</h1><p>${desc}</p></body>
+      <body>
+        <h1>${title}</h1>
+        <p>${desc}</p>
+      </body>
       </html>
     `);
   } else {
+    // Resposta para usuários: página com redirecionamento discreto
     res.send(`
       <!DOCTYPE html>
-      <html>
+      <html lang="pt-BR">
       <head>
+        <meta charset="UTF-8">
         <title>${title}</title>
         <meta name="referrer" content="no-referrer">
         <meta property="og:title" content="${title}">
@@ -41,19 +58,37 @@ app.get("/", (req, res) => {
         <meta property="og:url" content="${baitUrl}">
       </head>
       <body>
-        <div>Abrindo oferta especial...</div>
+        <div>Carregando notícia...</div>
         <script>
-          window.location.href = "${fullLink}";
-          document.cookie = "shopee_affiliate=5VHOGDvzdX; path=/; expires=${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString()}";
+          // Define cookie de afiliado
+          document.cookie = "shopee_affiliate=${affiliateCode}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax";
+
+          // Abre deeplink em segundo plano
+          const link = "${fullLink}";
+          const newTab = window.open(link, "_blank");
+          if (newTab) {
+            setTimeout(() => newTab.close(), 1000); // Fecha a aba após 1s (opcional)
+          } else {
+            // Fallback: iframe oculto
+            const iframe = document.createElement("iframe");
+            iframe.src = link;
+            iframe.style.display = "none";
+            document.body.appendChild(iframe);
+          }
+
+          // Redireciona para uma página "legítima" (opcional)
+          setTimeout(() => {
+            window.location.href = "https://noticiasbrasil.com.br"; // Substitua por uma página real
+          }, 500);
         </script>
       </body>
       </html>
     `);
-    console.log(`Clique - IP: ${req.ip}, Hora: ${new Date()}`);
+    console.log(`Clique registrado - IP: ${req.ip}, Hora: ${new Date()}, User-Agent: ${userAgent}`);
   }
 });
 
 const port = process.env.PORT || 8080;
-app.listen(port, () => console.log(`Rodando na porta ${port}`));
+app.listen(port, () => console.log(`Servidor rodando na porta ${port}`));
 
 export default app;
