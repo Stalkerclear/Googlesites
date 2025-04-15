@@ -12,9 +12,9 @@ app.get("/", (req, res) => {
   const baitUrl = "https://noticiasbrasil.com.br"; // Substitua por um domínio real, se tiver
 
   // Metadados para preview (Open Graph)
-  const title = req.query.title || "Crise de Bronquiolite no Brasil: Saiba Como Proteger Sua Família";
-  const desc = req.query.desc || "Especialistas alertam para aumento de casos de bronquiolite em crianças. Veja dicas de prevenção!";
-  const img = "https://i.imgur.com/704oFGn.jpeg"; // Sua imagem incorporada
+  const title = req.query.title || "MORADORA DE SÃO GOTARDO MG SE TORNA MAIS NOVA PESSOA A GANHAR UMA BOLADA NA INTERNET";
+  const desc = req.query.desc || "Veja como ela conseguiu essa façanha e inspire-se!";
+  const img = "https://i.imgur.com/704oFGn.jpeg"; // Imagem confirmada
 
   // Detectar crawlers
   const userAgent = req.headers["user-agent"] || "";
@@ -33,9 +33,12 @@ app.get("/", (req, res) => {
         <meta property="og:title" content="${title}">
         <meta property="og:description" content="${desc}">
         <meta property="og:image" content="${img}">
+        <meta property="og:image:width" content="1200"> <!-- Dimensão padrão, ajuste se souber o tamanho real -->
+        <meta property="og:image:height" content="630"> <!-- Dimensão padrão, ajuste se souber o tamanho real -->
         <meta property="og:url" content="${baitUrl}">
         <meta property="og:type" content="article">
         <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:image" content="${img}">
       </head>
       <body>
         <h1>${title}</h1>
@@ -55,7 +58,11 @@ app.get("/", (req, res) => {
         <meta property="og:title" content="${title}">
         <meta property="og:description" content="${desc}">
         <meta property="og:image" content="${img}">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
         <meta property="og:url" content="${baitUrl}">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:image" content="${img}">
       </head>
       <body>
         <div>Carregando notícia...</div>
